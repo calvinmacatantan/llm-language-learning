@@ -61,6 +61,3 @@ A local Flask web app for parsing ChatGPT conversation transcripts and evaluatin
 3. Paste a ChatGPT transcript into the text area.
 4. Click **Parse & Analyze**.
 5. View the results in the UI.
-
-## Transcript Format
-The parser is tuned for transcripts that have:
