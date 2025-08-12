@@ -43,10 +43,10 @@ A local Flask web app for parsing ChatGPT conversation transcripts and evaluatin
     ```
 
 4. **Set your API key**:
-    - Create a `.env` file in the project root:
-      ```bash
-      echo "OPENAI_API_KEY=sk-yourkeyhere" > .env
-      ```
+    Create a `.env` file in the project root:
+    ```bash
+    echo "OPENAI_API_KEY=sk-yourkeyhere" > .env
+    ```
 
 ## Usage
 
