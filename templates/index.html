@@ -34,12 +34,15 @@
     </div>
 
     <textarea id="input" placeholder="Paste transcript here..."></textarea>
-
     <div class="bar">
       <button id="analyze">Parse & Analyze</button>
+
+      <label class="switch" for="temp">temp</label>
+      <input type="range" id="temp" min="0" max="2" step="0.1" value="0.7" />
+      <span class="badge" id="tempVal">0.7</span>
+
       <label class="switch"><input type="checkbox" id="showTurns" checked> show parsed turns</label>
     </div>
-
     <div class="status" id="status"></div>
 
     <div id="results"></div>
@@ -97,10 +100,28 @@
       `;
     }
 
+    const tempEl = document.getElementById('temp');
+    const tempValEl = document.getElementById('tempVal');
+
+    // keep badge in sync and persist to localStorage
+    tempEl.addEventListener('input', () => {
+      tempValEl.textContent = tempEl.value;
+      localStorage.setItem('cta_temp', tempEl.value);
+    });
+
+   
+    const savedTemp = localStorage.getItem('cta_temp');
+    if (savedTemp !== null) {
+      tempEl.value = savedTemp;
+      tempValEl.textContent = savedTemp;
+    }
+
     document.getElementById('analyze').onclick = async () => {
       const raw = document.getElementById('input').value.trim();
       const status = document.getElementById('status');
       const results = document.getElementById('results');
+      const temperature = Math.max(0, Math.min(2, Number(tempEl.value))); // clamp 0–2
+
       status.textContent = "Parsing and analyzing…";
       results.innerHTML = "";
 
@@ -108,7 +129,7 @@
         const res = await fetch('/analyze', {
           method: 'POST',
           headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify({ transcript: raw })
+          body: JSON.stringify({ transcript: raw, temperature })
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);

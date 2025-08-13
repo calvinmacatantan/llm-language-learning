@@ -91,7 +91,9 @@ Without preamble, respond with:
 }
 '''
 
-def call_openai_with_messages(turns):
+MIN_TEMP = 0.0
+MAX_TEMP = 2.0
+def call_openai_with_messages(turns, temp):
     """
     Uses chat.completions (as in your snippet).
     We pass your developer_text, then the parsed turns, then your user instruction.
@@ -104,7 +106,7 @@ def call_openai_with_messages(turns):
 
     resp = client.chat.completions.create(
         model="gpt-4.1",
-        temperature=0,
+        temperature=temp,
         messages=messages
     )
 
@@ -145,14 +147,20 @@ def index():
 def analyze():
     data = request.get_json(force=True)
     raw = (data.get("transcript") or "").strip()
+
     if not raw:
-        return jsonify({"error": "Empty transcript"}), 400
+      return jsonify({"error": "Empty transcript"}), 400
+    try:
+        temp = float(data.get("temperature", MIN_TEMP))
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid temperature (must be a number)"}), 400
+    temp = max(MIN_TEMP, min(MAX_TEMP, temp))
 
     turns = parse_transcript(raw)
-    model_text = call_openai_with_messages(turns)
+    model_text = call_openai_with_messages(turns, temp)
     scores = coerce_to_scores(model_text)
 
-    return jsonify({"scores": scores, "turns": turns})
+    return jsonify({"scores": scores, "turns": turns, "temperature": temp})
 
 if __name__ == "__main__":
     app.run(debug=True)
