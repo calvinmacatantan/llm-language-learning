@@ -65,13 +65,6 @@
         return v == null ? "—" : Math.round(Number(v) * 100) + "%";
       }
 
-      // Optional: keep numbers sane
-      function clamp(v, lo, hi) {
-        if (v == null) return v;
-        const n = Number(v);
-        if (Number.isNaN(n)) return v;
-        return Math.max(lo, Math.min(hi, n));
-      }
       const card = (title, obj) => `
         <div class="card">
             <h3>${title}</h3>
@@ -84,7 +77,7 @@
         <details open>
           <summary>Parsed Turns (${(turns||[]).length})</summary>
           <div class="turns mono">${
-            (turns||[]).map((t,i)=>`[${i}] ${t.role.toUpperCase()}\\n${t.content}\\n`).join("\\n")
+            (turns||[]).map((t,i)=>`[${i}] ${t.role.toUpperCase()} \n ${t.content} \n`).join("\n")
           }</div>
         </details>`;
 
